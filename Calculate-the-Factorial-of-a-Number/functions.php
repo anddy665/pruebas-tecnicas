@@ -22,18 +22,22 @@ class CalculateFactorial
 
     public function factorialCalculation()
     {
+       if($this->number > 0){
         while ($this->i <= $this->number) {
             $this->initialValue = $this->initialValue * $this->i;
             $this->i = $this->i + 1;
         }
         echo "the factorial number of  !$this->number is = $this->initialValue";
+       }else {
+        echo "Fatal ERROR the funtion just accept posivive numbers";
+       };
     }
 };
 
 
 $firstValue = 1;
 $secondValue = 1;
-$num = 13;
+$num = -13;
 
 
 $data  = new CalculateFactorial($firstValue, $secondValue, $num);
