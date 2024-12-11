@@ -37,7 +37,7 @@ class CalculateFactorial
 
 $firstValue = 1;
 $secondValue = 1;
-$num = -13;
+$num = $_REQUEST['number'];
 
 
 $data  = new CalculateFactorial($firstValue, $secondValue, $num);

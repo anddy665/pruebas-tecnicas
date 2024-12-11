@@ -11,7 +11,16 @@ include('../Calculate-the-Factorial-of-a-Number/functions.php')
     <title>Test #2</title>
   </head>
   <body>
-   
+    <div>
+        <form action="functions.php" method="POST">
+            <div>
+                <label for="number">Introduce the number</label>
+                <input type="number" name="number" />
+                <br>
+                <BUtton>Send information</BUtton>
+            </div>
+        </form>
+    </div> 
   </body>
 </html>
 
