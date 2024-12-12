@@ -1,49 +1,70 @@
 <?php
 require('./fileDownloader.php');
-$filename = 'test.txt';
-$somecontent = "===>This is a new content";
 
+class FileProcessor
+{
+    private $filename;
 
-if (is_writable($filename)) {
+    public function __construct($filename)
+    {
+        $this->filename = $filename;
+    }
 
-
-    if (!$fp = fopen($filename, 'r')) {
-        echo "Cannot open file ($filename) for reading";
+    public function handleError($message)
+    {
+        echo $message;
         exit;
     }
 
-
-    $fileContent = fread($fp, filesize($filename));
-    fclose($fp);
-
-
-    if (strpos($fileContent, $somecontent) === false) {
-
-        if (!$fp = fopen($filename, 'a')) {
-            echo "Cannot open file ($filename)";
-            exit;
+    public function readFileContent()
+    {
+        if (!is_readable($this->filename) || !$fp = fopen($this->filename, 'r')) {
+            $this->handleError("Cannot open file ({$this->filename}) for reading");
         }
 
-        if (fwrite($fp, $somecontent) === FALSE) {
-            echo "Cannot write to file ($filename)";
-            exit;
-        }
-
+        $fileContent = fread($fp, filesize($this->filename));
         fclose($fp);
-        echo "==============================>Success, wrote ($somecontent) to file ($filename)<br>";
-    } else {
-        echo "Content already exists in the file.<br>";
+
+        return $fileContent;
     }
 
-    $fp = fopen($filename, 'r');
-    $fileContent = fread($fp, filesize($filename));
-    fclose($fp);
+    public function appendContent($content)
+    {
+        $currentContent = $this->readFileContent();
 
+        if (strpos($currentContent, $content) === false) {
+            if (!$fp = fopen($this->filename, 'a') || fwrite($fp, $content) === false) {
+                $this->handleError("Cannot write to file ({$this->filename})");
+            }
 
-    echo "Updated File Content: <br><pre>$fileContent</pre>";
-} else {
-    echo "The file $filename is not writable";
+            fclose($fp);
+            echo "<br>Success: Appended content to file ({$this->filename})<br>";
+        } else {
+            echo "<br>Content already exists in the file.<br>";
+        }
+    }
+
+    public function getUpdatedContent()
+    {
+        return $this->readFileContent();
+    }
+
+    public function downloadFile()
+    {
+        $downloader = new FileDownloader();
+        $downloader->download($this->filename);
+    }
 }
 
-$downloader = new FileDownloader();
-$downloader->download($filename);
+
+$filename = 'test.txt';
+$somecontent = "===>This is a new content";
+
+$fileProcessor = new FileProcessor($filename);
+$fileProcessor->appendContent($somecontent);
+
+$updatedContent = $fileProcessor->getUpdatedContent();
+
+echo "<br>Updated File Content:<br><pre>{$updatedContent}</pre>";
+
+$fileProcessor->downloadFile();
