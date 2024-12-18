@@ -15,30 +15,49 @@ class MysqlConnection
         $this->database = $database;
     }
 
-    public function makeConnection($server, $user, $key, $db)
+    public function makeConnection()
     {
-        $conn = new mysqli($server, $user, $key, $db);
+        $conn = new mysqli($this->servername, $this->username, $this->password, $this->database);
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         }
         echo "Connected successfully<br>";
-
-       
     }
 
 
-    public function extractInfo($server, $user, $key, $db) {
-        $conn = new mysqli($server, $user, $key, $db);
+    public function extractInfo()
+    {
+        $conn = new mysqli($this->servername, $this->username, $this->password, $this->database);
 
         $sql = "SELECT * FROM users";
         $result = $conn->query($sql);
 
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
-                echo "ID: " . $row["id"] . " - Name: " . $row["name"] . ",  Email: ". $row["email"] . ", Age:  ". $row["age"]. "<br>";
+                echo "ID: " . $row["id"] . " - Name: " . $row["name"] . ",  Email: " . $row["email"] . ", Age:  " . $row["age"] . "<br>";
             }
         } else {
             echo "No data found in the 'users' table.";
+        }
+
+        $conn->close();
+    }
+
+
+    public function deleteData()
+    {
+        $conn = new mysqli($this->servername, $this->username, $this->password, $this->database);
+
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $sql = "DELETE FROM users WHERE id=1";
+
+        if ($conn->query($sql) === TRUE) {
+            echo "deleted successfully";
+        } else {
+            echo "Error deleting data: " . $conn->error;
         }
 
         $conn->close();
@@ -47,5 +66,6 @@ class MysqlConnection
 
 
 $connect = new MysqlConnection("localhost", "harrisong", "root", "student_data");
-$connect->makeConnection($connect->servername, $connect->username, $connect->password, $connect->database);
-$connect->extractInfo("localhost", "harrisong", "root", "student_data");
+$connect->makeConnection();
+$connect->extractInfo();
+$connect->deleteData();
